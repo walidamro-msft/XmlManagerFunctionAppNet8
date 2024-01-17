@@ -54,7 +54,7 @@ namespace XmlManager
 
 
             XmlReaderSettings settings = new XmlReaderSettings();
-            settings.Schemas.Add(null, xsdSchemaUrl);
+            settings.Schemas.Add(null, xsdSchemaUrl); // This line of code will only load the first XSD and will not load the leaf XSD, so it will show only 1 schema (which is the root cause of the bug) -- in .NET 4.8 this method loads both Schemas and it will show 2 schemas.
             settings.ValidationType = ValidationType.Schema;
 
             settings.ValidationEventHandler += new ValidationEventHandler(ValidationCallBack);
@@ -65,7 +65,7 @@ namespace XmlManager
             using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(xmlBody)))
 
 
-            using (XmlReader reader = XmlReader.Create(stream, settings))
+            using (XmlReader reader = XmlReader.Create(stream, settings)) // This where the code generates the exception as it validates the XML againt the XSD schemas, so it only finds 1 schema in the settings.Schemas object.
             {
                 try
                 {
